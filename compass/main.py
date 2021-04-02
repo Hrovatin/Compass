@@ -356,7 +356,7 @@ def entry():
         logger.info("Partitioning dataset into "+str(args['microcluster_size'])+" microclusters")
         data = utils.read_data(args['data'])
         pools = microcluster(data, cellsPerPartition = args['microcluster_size'], 
-                            n_jobs = args['num_processes'])
+                            n_jobs = args['num_processes'], latentSpace=args['latent_sapce'])
         pooled_data = pool_matrix_cols(data, pools)
 
         pooled_data_file = os.path.join(args['temp_dir'], "pooled_data.tsv")
@@ -370,6 +370,17 @@ def entry():
         args['orig_data'] = args['data']
         args['data'] = [pooled_data_file]
         args['pools_file'] = pools_file
+        
+        if args['latent_sapce']:
+            logger.info("Partitioning latent space into "+str(args['microcluster_size'])+" microclusters")
+            latent=pd.read_csv(args['latent_sapce'], sep='\t', index_col=0).T
+            pooled_latent = pool_matrix_cols(latent, pools)
+
+            pooled_latent_file = os.path.join(args['temp_dir'], "pooled_latent.tsv")
+            pooled_latent.to_csv(pooled_latent_file, sep="\t")
+
+            args['orig_latent_space'] = args['latent_space']
+            args['latent_space'] = pooled_latent_file
         
     if args['glucose']:
         if not args['media']:
