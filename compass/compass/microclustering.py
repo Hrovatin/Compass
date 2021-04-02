@@ -35,7 +35,7 @@ def microcluster(exprData, cellsPerPartition=10,
 
         model = PCA(n_components=min(log_expression_filtered.shape[0], log_expression_filtered.shape[1], 20),
                     random_state = PCA_SEED)
-        pca_expression = model.fit_transform(log_expression_filtered.T).T
+        pca_expression = model.fit_transform(log_expression_filtered.values.T).T
         pca_expression = pd.DataFrame(pca_expression,
                                     columns=exprData.columns)
         res = pca_expression
